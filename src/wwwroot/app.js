@@ -19,6 +19,7 @@ export function draw() {
     const chart = new Chart(data, types);
     const svg = chart.buildSvg();
 
-    document.getElementById('svgHolder').appendChild(svg);
+    const svgHolder = document.getElementById('svgHolder');
+    svgHolder.innerHTML = "";
+    svgHolder.appendChild(svg);
 }
-draw();
