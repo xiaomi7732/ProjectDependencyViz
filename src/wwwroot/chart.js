@@ -104,7 +104,7 @@ export default class Chart {
         node.append("circle")
             .attr("stroke", "white")
             .attr("stroke-width", 1.5)
-            .attr("r", 4);
+            .attr("r", 4);  // Dot size
 
         node.append("text")
             .attr("x", 8)
