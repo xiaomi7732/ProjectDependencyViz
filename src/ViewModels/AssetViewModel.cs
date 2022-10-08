@@ -43,6 +43,28 @@ public class AssetViewModel : ViewModelBase<ArchAnalyzer.Pages.Assets>
         }
     }
 
+    private bool _minimalControl;
+    public bool MinimalControl
+    {
+        get { return _minimalControl; }
+        set
+        {
+            if (_minimalControl != value)
+            {
+                _minimalControl = value;
+                RaisePropertyChangeAsync();
+            }
+        }
+    }
+
+    private bool _isReadyToAnalysis = false;
+    public bool IsReadyToAnalysis
+    {
+        get { return _isReadyToAnalysis; }
+        set { _isReadyToAnalysis = value; }
+    }
+
+
     public async Task LoadFilesAsync(InputFileChangeEventArgs e)
     {
         Console.WriteLine(e.File.Name);
@@ -51,12 +73,15 @@ public class AssetViewModel : ViewModelBase<ArchAnalyzer.Pages.Assets>
             _assets = await _textAssetsDeserializer.WithStream(readStream).DeserializeAsync(default);
         }
 
+        IsReadyToAnalysis = false;
         if (_assets is not null)
         {
             ProjectName = _assets.Project.Restore.ProjectName;
 
             ValidTargets = await _assetService.GetTargetsAsync(_assets, default);
             SelectedTarget = ValidTargets.FirstOrDefault();
+
+            IsReadyToAnalysis = true;
         }
     }
 
@@ -97,29 +122,9 @@ public class AssetViewModel : ViewModelBase<ArchAnalyzer.Pages.Assets>
 
     protected override async Task OnPropertyChangeAsync(string propertyName)
     {
-        if (string.Equals(propertyName, nameof(AssetJsonText), StringComparison.Ordinal))
-        {
-            if (string.IsNullOrEmpty(AssetJsonText))
-            {
-                SetupDefaults();
-                return;
-            }
-
-            _assets = await _textAssetsDeserializer.WithJsonString(AssetJsonText).DeserializeAsync(default);
-            if (_assets is null)
-            {
-                SetupDefaults();
-                return;
-            }
-
-            ValidTargets = await _assetService.GetTargetsAsync(_assets, default);
-            SelectedTarget = ValidTargets.FirstOrDefault();
-        }
-
+        await Task.Yield();
         if (string.Equals(propertyName, nameof(SelectedTarget)))
         {
-            _assets = _assets ?? await _textAssetsDeserializer.WithJsonString(AssetJsonText).DeserializeAsync(default);
-
             if (_assets is null)
             {
                 return;
@@ -172,5 +177,11 @@ public class AssetViewModel : ViewModelBase<ArchAnalyzer.Pages.Assets>
 
         IEnumerable<DrawLink> graph = builder.Build(SelectedTarget);
         _js.InvokeVoidAsync("draw", graph, graph.Select(link => link.Type).Distinct());
+        MinimalControl = true;
+    }
+
+    public void Expand()
+    {
+        MinimalControl = false;
     }
 }

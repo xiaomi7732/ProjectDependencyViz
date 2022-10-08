@@ -4,8 +4,13 @@
     justify-items: stretch;
 }
 
+#asset-picker{
+    margin-top: 0;
+}
+
 #svgHolder {
     border: 0px solid red;
+    background-color: #f6f6f6;
 }
 
 #input-container {

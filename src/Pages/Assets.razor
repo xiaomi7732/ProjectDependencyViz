@@ -4,75 +4,86 @@
 @inject AssetViewModel _viewModel
 
 <div id='asset-page'>
-    <div id='asset-picker' class='section'>
-        <h2>Load Assets</h2>
-        <div id="input-container">
-            <div>Restore your project and load project.assets.json under your project’s obj folder. For example:
-                DependencyAnalyzer/src/obj/project.assets.json.</div>
-            <label class='custom-file-upload' for="project-asset-input">
-                Choose asset file
-                <InputFile id='project-asset-input' OnChange="@_viewModel.LoadFilesAsync" accept=".assets.json"
+    @if (!_viewModel.MinimalControl)
+    {
+        <div id='asset-picker' class='section'>
+            <h2>Load Assets</h2>
+            <div id="input-container">
+                <div>Restore your project and load project.assets.json under your project’s obj folder. For example:
+                    DependencyAnalyzer/src/obj/project.assets.json.</div>
+                <label class='custom-file-upload' for="project-asset-input">
+                    Choose asset file
+                    <InputFile id='project-asset-input' OnChange="@_viewModel.LoadFilesAsync" accept=".assets.json"
                     CssClass='hidden-obj' />
-            </label>
+                </label>
+            </div>
         </div>
-    </div>
 
-    <div id='project-info' class='section'>
-        <h2>Project Summary</h2>
+        <div id='project-info' class='section'>
+            <h2>Project Summary</h2>
 
-        @if (!string.IsNullOrEmpty(_viewModel.ProjectName))
+            @if (!string.IsNullOrEmpty(_viewModel.ProjectName))
+            {
+                <div class='project-summary-line'><span class='summary-title'>Project
+                        name:</span><span>@_viewModel.ProjectName</span></div>
+            }
+
+            <div class='project-summary-line'>
+                @if (_viewModel.ValidTargets.Count() > 0)
+                {
+                    <div id="target-picker">
+                        <label class='summary-title' for="target-picker">Available targets:</label>
+                        <select id='target-picker' name='target-picker' @bind='_viewModel.SelectedTarget'>
+                            @foreach (string target in _viewModel.ValidTargets)
+                            {
+                                <option value='@target'>@target</option>
+                            }
+                        </select>
+                    </div>
+                }
+                @if (_viewModel.PackageList.Count() > 0)
+                {
+                    <div id="target-package-list">
+                        <label class='summary-title' for="package-picker">Target package:</label>
+                        <select id='package-picker' name='package-picker' @bind='_viewModel.SelectedPackage'>
+                            <option value=''>All</option>
+                            @foreach (string package in _viewModel.PackageList)
+                            {
+                                <option value='@package'>@package</option>
+                            }
+                        </select>
+                    </div>
+                }
+
+                @if (!string.IsNullOrEmpty(_viewModel.SelectedPackage))
+                {
+                    <div id="analysis-direction-picker">
+                        <label class='summary-title' for='direction-picker'>Analyze direction:</label>
+                        <select id='direction-picker' name='direction-picker' @bind='_viewModel.AnalysisDirection'>
+                            <option value='Up'>Up</option>
+                            <option value='Down'>Down</option>
+                        </select>
+                    </div>
+                    <div title='Up: Packages that depends on target. Down: Packages the target depends on.'
+                class='tool-tip-icon'>ⓘ</div>
+                }
+            </div>
+
+            <div id='level' class='project-summary-line'>
+                <label class='summary-title' for='resursiveLevel'>Search level:</label>
+                <input id='resursiveLevel' type='number' @bind='_viewModel.SearchLevel' />
+                <div title='Search depth. 0 for no limit.' class='tool-tip-icon'>ⓘ</div>
+            </div>
+        </div>
+        @if (_viewModel.IsReadyToAnalysis)
         {
-            <div class='project-summary-line'><span class='summary-title'>Project
-                    name:</span><span>@_viewModel.ProjectName</span></div>
+            <button class='btn btn-primary' @onclick="_viewModel.LoadChart">Load Chart</button>
         }
-
-        <div class='project-summary-line'>
-            @if (_viewModel.ValidTargets.Count() > 0)
-            {
-                <div id="target-picker">
-                    <label class='summary-title' for="target-picker">Available targets:</label>
-                    <select id='target-picker' name='target-picker' @bind='_viewModel.SelectedTarget'>
-                        @foreach (string target in _viewModel.ValidTargets)
-                        {
-                            <option value='@target'>@target</option>
-                        }
-                    </select>
-                </div>
-            }
-            @if (_viewModel.PackageList.Count() > 0)
-            {
-                <div id="target-package-list">
-                    <label class='summary-title' for="package-picker">Target package:</label>
-                    <select id='package-picker' name='package-picker' @bind='_viewModel.SelectedPackage'>
-                        <option value=''>All</option>
-                        @foreach (string package in _viewModel.PackageList)
-                        {
-                            <option value='@package'>@package</option>
-                        }
-                    </select>
-                </div>
-            }
-
-            @if (!string.IsNullOrEmpty(_viewModel.SelectedPackage))
-            {
-                <div id="analysis-direction-picker">
-                    <label class='summary-title' for='direction-picker'>Analyze direction:</label>
-                    <select id='direction-picker' name='direction-picker' @bind='_viewModel.AnalysisDirection'>
-                        <option value='Up'>Up</option>
-                        <option value='Down'>Down</option>
-                    </select>
-                </div>
-            }
-        </div>
-
-        <div id='level' class='project-summary-line'>
-            <label class='summary-title' for='resursiveLevel'>Search level:</label>
-            <input id='resursiveLevel' type='number' @bind='_viewModel.SearchLevel' />
-            <div title='Search depth. 0 for no limit.' class='tool-tip-icon'>ⓘ</div>
-        </div>
-    </div>
-    <button class='btn btn-primary' @onclick="_viewModel.LoadChart">Load Chart</button>
-
+    }
+    else
+    {
+        <button class='btn' @onclick='_viewModel.Expand'>Refine Analysis</button>
+    }
     <div class='section'>
         <div id="svgHolder">Press Load Chart to see project dependencies.</div>
     </div>
