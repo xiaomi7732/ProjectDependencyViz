@@ -7,6 +7,7 @@ namespace ArchAnalyzer.Services;
 internal class TextAssetsDeserializer : IDeserializeAssets
 {
     private string? _assetJsonText;
+    private Stream? _stream;
     private readonly JsonSerializerOptions _options;
 
     public TextAssetsDeserializer(JsonSerializerOptions options)
@@ -24,14 +25,32 @@ internal class TextAssetsDeserializer : IDeserializeAssets
         return this;
     }
 
-    public Task<Assets?> DeserializeAsync(CancellationToken cancellationToken)
+    public TextAssetsDeserializer WithStream(Stream inputStream)
     {
-        if (string.IsNullOrEmpty(_assetJsonText))
+        if (inputStream is null)
         {
-            throw new InvalidCastException("Can't deserialize empty asset string.");
+            throw new ArgumentNullException(nameof(inputStream));
+        }
+        _stream = inputStream;
+        return this;
+    }
+
+    public async Task<Assets?> DeserializeAsync(CancellationToken cancellationToken)
+    {
+        if (string.IsNullOrEmpty(_assetJsonText) && _stream is null)
+        {
+            throw new InvalidCastException("Can't deserialize empty asset string/stream.");
         }
 
-        Assets? assets = JsonSerializer.Deserialize<Assets>(_assetJsonText, _options);
-        return Task.FromResult(assets);
+        Assets? assets = null;
+        if (_stream is not null)
+        {
+            assets = await JsonSerializer.DeserializeAsync<Assets>(_stream, _options, cancellationToken);
+        }
+        else if (!string.IsNullOrEmpty(_assetJsonText))
+        {
+            assets = JsonSerializer.Deserialize<Assets>(_assetJsonText, _options);
+        }
+        return assets;
     }
 }
