@@ -66,7 +66,7 @@ export default class Chart {
 
         const svg = d3.create("svg")
             .attr("viewBox", [-width / 2, -height / 2, width, height])
-            .style("font", "12px sans-serif");
+            .style("font", "6px sans-serif");
 
         // Per-type markers, as they don't inherit styles.
         svg.append("defs").selectAll("marker")

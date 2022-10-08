@@ -1,7 +1,29 @@
 @page "/"
-@inject IJSRuntime _js;
+@inherits ViewModelComponentBase<Assets>
+
+@inject AssetViewModel _viewModel
+
 <h1>Hello</h1>
+
+<div id="input-container">
+    <label for="project-asset-input">Project Asset json file</label>
+    <textarea id="project-asset-input" rows="5" @bind="_viewModel.AssetJsonText"></textarea>
+</div>
+
+@if (_viewModel.ValidTargets.Count() > 0)
+{
+    <div id="target-picker">
+        <label for="target-picker">Choose target</label>
+        <select id='target-picker' name='target-picker' @bind='_viewModel.SelectedTarget'>
+            @foreach (string target in _viewModel.ValidTargets)
+            {
+                <option value='@target'>@target</option>
+            }
+        </select>
+        <div>@_viewModel.SelectedTarget</div>
+    </div>
+}
 
 <div id="svgHolder"></div>
 
-<button @onclick="LoadChart">Load Chart</button>
+<button @onclick="_viewModel.LoadChart">Load Chart</button>
