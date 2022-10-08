@@ -73,6 +73,8 @@ public class AssetViewModel : ViewModelBase<ArchAnalyzer.Pages.Assets>
 
     public AnalysisDirection AnalysisDirection { get; set; }
 
+    public int SearchLevel { get; set; } = 0;
+
     public void LoadSampleData()
     {
 
@@ -142,6 +144,15 @@ public class AssetViewModel : ViewModelBase<ArchAnalyzer.Pages.Assets>
         {
             builder = builder.WithPackageItem(PackageItem.Parse(SelectedPackage)).WithDirection(AnalysisDirection);
         };
+
+        if (SearchLevel <= 0)
+        {
+            builder.WithLevel(null);
+        }
+        else
+        {
+            builder.WithLevel(SearchLevel);
+        }
 
 
         IEnumerable<DrawLink> graph = builder.Build(SelectedTarget);

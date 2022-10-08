@@ -13,6 +13,8 @@ public interface IAssetService
     /// </summary>
     IEnumerable<PackageItem> GetParents(Assets assets, string target, PackageItem current);
     IEnumerable<PackageItem> GetChildren(Assets assets, string target, PackageItem currentItem);
+
+    bool IsReferencedByProjectDirectly(Assets assets, string target, PackageItem item);
 }
 
 internal class AssetService : IAssetService
@@ -108,5 +110,33 @@ internal class AssetService : IAssetService
         return Task.FromResult(assets.Targets.Keys.AsEnumerable());
     }
 
+    public bool IsReferencedByProjectDirectly(Assets assets, string target, PackageItem item)
+    {
+        if (assets is null)
+        {
+            throw new ArgumentNullException(nameof(assets));
+        }
 
+        if (string.IsNullOrEmpty(target))
+        {
+            throw new ArgumentException($"'{nameof(target)}' cannot be null or empty.", nameof(target));
+        }
+
+        if (item is null)
+        {
+            throw new ArgumentNullException(nameof(item));
+        }
+
+        if (assets.ProjectFileDependencyGroups?.ContainsKey(target) == true)
+        {
+            IEnumerable<string> directlyReferenced = assets.ProjectFileDependencyGroups[target];
+            return directlyReferenced.Any(r =>
+            {
+                ProjectFileDependencyItem directlyRef = new ProjectFileDependencyItem(r);
+                return string.Equals(directlyRef.Name, item.Name, StringComparison.OrdinalIgnoreCase)
+                    && string.Equals(directlyRef.Version, item.Version, StringComparison.OrdinalIgnoreCase);
+            });
+        }
+        return false;
+    }
 }

@@ -51,6 +51,11 @@
     </div>
 }
 
-<div id="svgHolder"></div>
+<div id='level'>
+    <label for='resursiveLevel'>Search level:</label>
+    <input id='resursiveLevel' type='number' @bind='_viewModel.SearchLevel'/>
+</div>
 
 <button @onclick="_viewModel.LoadChart">Load Chart</button>
+
+<div id="svgHolder"></div>

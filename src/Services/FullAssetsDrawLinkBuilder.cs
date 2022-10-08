@@ -8,6 +8,7 @@ public class FullAssetsDrawLinkBuilder : IDrawLinksBuilder
 {
     private PackageItem? _interestingPackage;
     private AnalysisDirection _analysisDirection = AnalysisDirection.Up;
+    private int? _recursiveLevel;
 
     public FullAssetsDrawLinkBuilder(IAssetService assetService)
     {
@@ -36,6 +37,13 @@ public class FullAssetsDrawLinkBuilder : IDrawLinksBuilder
         _analysisDirection = direction;
         return this;
     }
+
+    public FullAssetsDrawLinkBuilder WithLevel(int? recursiveLevel)
+    {
+        _recursiveLevel = recursiveLevel;
+        return this;
+    }
+
 
     public FullAssetsDrawLinkBuilder Clear()
     {
@@ -85,15 +93,15 @@ public class FullAssetsDrawLinkBuilder : IDrawLinksBuilder
         }
     }
 
-    private void BuildDown(string target, PackageItem currentItem)
+    private void BuildDown(string target, PackageItem currentItem, int currentLevel = 0)
     {
         IEnumerable<PackageItem> children = _assetService.GetChildren(_assets!, target, currentItem);
-        if (children.Any())
+        if ((_recursiveLevel is null || currentLevel < _recursiveLevel) && children.Any())
         {
             foreach (PackageItem child in children)
             {
                 _links.Add(currentItem.DrawLinkTo(child, _assets!, _assetService));
-                BuildDown(target, child);
+                BuildDown(target, child, currentLevel + 1);
             }
         }
         else
@@ -102,19 +110,24 @@ public class FullAssetsDrawLinkBuilder : IDrawLinksBuilder
         }
     }
 
-    private void BuildUp(string target, PackageItem currentItem)
+    private void BuildUp(string target, PackageItem currentItem, int currentLevel = 0)
     {
         IEnumerable<PackageItem> parents = _assetService.GetParents(_assets!, target, currentItem);
-        if (parents.Any())
+        if ((_recursiveLevel is null || currentLevel < _recursiveLevel) && parents.Any())
         {
             foreach (PackageItem parent in parents)
             {
                 _links.Add(parent.DrawLinkTo(currentItem, _assets!, _assetService));
-                BuildUp(target, parent);
+                BuildUp(target, parent, currentLevel + 1);
             }
         }
         else
         {
+            if (!_assetService.IsReferencedByProjectDirectly(_assets!, target, currentItem))
+            {
+                return;
+            }
+
             string? projectName = _assets?.Project?.Restore?.ProjectName;
             string sourceNodeName = string.IsNullOrEmpty(projectName) ? target : $"{projectName}/{target}";
             string libType = _assetService.GetLibraryType(_assets!, currentItem) ?? "Unknown";
@@ -146,10 +159,15 @@ public class FullAssetsDrawLinkBuilder : IDrawLinksBuilder
         }
     }
 
-    private void AppendDependencies(string target, string sourceName, string sourceVersion)
+    private void AppendDependencies(string target, string sourceName, string sourceVersion, int currentLevel = 1)
     {
         IDictionary<string, AssetPackageInfo>? targetPackageCollection = _assets?.Targets?[target];
         if (targetPackageCollection is null)
+        {
+            return;
+        }
+
+        if(_recursiveLevel is not null && currentLevel >=_recursiveLevel)
         {
             return;
         }
@@ -170,7 +188,7 @@ public class FullAssetsDrawLinkBuilder : IDrawLinksBuilder
 
                 _links.Add(new DrawLink() { Source = key, Target = destPackage, Type = libraryType });
 
-                AppendDependencies(target, dependency.Key, dependency.Value);
+                AppendDependencies(target, dependency.Key, dependency.Value, currentLevel + 1);
             }
         }
     }
