@@ -1,6 +1,7 @@
 using ArchAnalyzer.Models;
 using ArchAnalyzer.Services;
 using ArchAnalyzer.Services.Contracts;
+using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.JSInterop;
 
 namespace ArchAnalyzer.ViewModels;
@@ -40,6 +41,18 @@ public class AssetViewModel : ViewModelBase<ArchAnalyzer.Pages.Assets>
         }
     }
 
+    public async Task LoadFilesAsync(InputFileChangeEventArgs e)
+    {
+        Console.WriteLine(e.File.Name);
+        using (Stream readStream = e.File.OpenReadStream(5 * 1024 * 1024, default))
+        {
+            _assets = await _textAssetsDeserializer.WithStream(readStream).DeserializeAsync(default);
+        }
+
+        ValidTargets = await _assetService.GetTargetsAsync(_assets, default);
+        SelectedTarget = ValidTargets.FirstOrDefault();
+    }
+
     public IEnumerable<string> ValidTargets { get; set; } = Enumerable.Empty<string>();
 
     private string? _selectedTarget;
@@ -74,11 +87,6 @@ public class AssetViewModel : ViewModelBase<ArchAnalyzer.Pages.Assets>
     public AnalysisDirection AnalysisDirection { get; set; }
 
     public int SearchLevel { get; set; } = 0;
-
-    public void LoadSampleData()
-    {
-
-    }
 
     protected override async Task OnPropertyChangeAsync(string propertyName)
     {

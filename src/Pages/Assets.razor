@@ -8,6 +8,7 @@
 <div id="input-container">
     <label for="project-asset-input">Project Asset json file</label>
     <textarea id="project-asset-input" rows="5" @bind="_viewModel.AssetJsonText"></textarea>
+    <InputFile OnChange="@_viewModel.LoadFilesAsync" accept=".assets.json" />
 </div>
 
 @if (_viewModel.ValidTargets.Count() > 0)
