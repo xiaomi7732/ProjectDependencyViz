@@ -1,5 +1,15 @@
 ﻿html, body {
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    margin: 0;
+    font-size: 12px;
+}
+
+:root {
+    --gap-large: 32px;
+    --gap-small: 16px;
+    --gap-mini: 8px;
+    --text-leading-space: 4px;
+    --accent: #1b6ec2;
 }
 
 h1:focus {
@@ -10,9 +20,14 @@ a, .btn-link {
     color: #0071c1;
 }
 
+.btn{
+    padding: 4px 8px;
+    cursor: pointer;
+}
+
 .btn-primary {
     color: #fff;
-    background-color: #1b6ec2;
+    background-color: var(--accent);
     border-color: #1861ac;
 }
 
@@ -60,3 +75,10 @@ a, .btn-link {
     .blazor-error-boundary::after {
         content: "An error has occurred."
     }
+
+.tool-tip-icon
+{
+    margin-left: var(--text-leading-space);
+    margin-right: var(--text-leading-space);
+    cursor: pointer;
+}

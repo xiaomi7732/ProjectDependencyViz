@@ -16,6 +16,8 @@ public class AssetViewModel : ViewModelBase<ArchAnalyzer.Pages.Assets>
     private Assets? _assets;
     private PackageItem? interestingPackage;
 
+    public string? ProjectName { get; set; }
+
     public AssetViewModel(
         IJSRuntime jsRuntime,
         IDeserializeAssets textAssetsDeserializer,
@@ -49,8 +51,13 @@ public class AssetViewModel : ViewModelBase<ArchAnalyzer.Pages.Assets>
             _assets = await _textAssetsDeserializer.WithStream(readStream).DeserializeAsync(default);
         }
 
-        ValidTargets = await _assetService.GetTargetsAsync(_assets, default);
-        SelectedTarget = ValidTargets.FirstOrDefault();
+        if (_assets is not null)
+        {
+            ProjectName = _assets.Project.Restore.ProjectName;
+
+            ValidTargets = await _assetService.GetTargetsAsync(_assets, default);
+            SelectedTarget = ValidTargets.FirstOrDefault();
+        }
     }
 
     public IEnumerable<string> ValidTargets { get; set; } = Enumerable.Empty<string>();

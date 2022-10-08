@@ -6,6 +6,7 @@ namespace ArchAnalyzer.Services;
 
 public class FullAssetsDrawLinkBuilder : IDrawLinksBuilder
 {
+    private Assets? _assets;
     private PackageItem? _interestingPackage;
     private AnalysisDirection _analysisDirection = AnalysisDirection.Up;
     private int? _recursiveLevel;
@@ -15,7 +16,6 @@ public class FullAssetsDrawLinkBuilder : IDrawLinksBuilder
         _assetService = assetService ?? throw new ArgumentNullException(nameof(assetService));
     }
 
-    private Assets? _assets;
     private HashSet<DrawLink> _links = new HashSet<DrawLink>();
     private readonly IAssetService _assetService;
 
@@ -47,6 +47,10 @@ public class FullAssetsDrawLinkBuilder : IDrawLinksBuilder
 
     public FullAssetsDrawLinkBuilder Clear()
     {
+        _assets = default;
+        _interestingPackage = default;
+        _analysisDirection = AnalysisDirection.Up;
+        _recursiveLevel = default;
         _links.Clear();
         return this;
     }
@@ -167,7 +171,7 @@ public class FullAssetsDrawLinkBuilder : IDrawLinksBuilder
             return;
         }
 
-        if(_recursiveLevel is not null && currentLevel >=_recursiveLevel)
+        if (_recursiveLevel is not null && currentLevel >= _recursiveLevel)
         {
             return;
         }

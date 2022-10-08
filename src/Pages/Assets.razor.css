@@ -1,9 +1,68 @@
-#svgHolder {
-    width: 1800px;
-}
-
-#input-container
-{
+#asset-page{
     display: flex;
     flex-direction: column;
+    justify-items: stretch;
+}
+
+#svgHolder {
+    border: 0px solid red;
+}
+
+#input-container {
+    display: flex;
+    flex-direction: column;
+}
+
+label {
+    line-height: 32px;
+}
+
+::deep #project-asset-input {
+    display: none;
+}
+
+.custom-file-upload {
+    border: 1px solid #ccc;
+    background-color: #ccc;
+    display: inline-block;
+    padding: 6px 12px;
+    cursor: pointer;
+    line-height: 16px;
+    width: 120px;
+    text-align: center;
+    margin-top: var(--gap-small);
+}
+
+.section {
+    margin-top: var(--gap-large);
+}
+
+.project-summary-line
+{
+    margin-top: var(--gap-small);
+    margin-bottom: var(--gap-mini);
+    display: flex;
+    flex-flow: row;
+    justify-content: left;
+    align-items: center;
+}
+
+.summary-title
+{
+    margin-right: var(--text-leading-space);
+    font-weight: 600;
+}
+
+#target-picker
+{
+    margin-right: var(--gap-small);
+}
+
+#target-package-list
+{
+    margin-right: var(--gap-small);
+}
+
+button{
+    align-self: flex-start;
 }
