@@ -24,6 +24,33 @@
     </div>
 }
 
+@if (_viewModel.PackageList.Count() > 0)
+{
+    <div id="target-package-list">
+        <label for="package-picker">Pick an interesting package:</label>
+        <select id='package-picker' name='package-picker' @bind='_viewModel.SelectedPackage'>
+            <option value=''>All</option>
+            @foreach (string package in _viewModel.PackageList)
+            {
+                <option value='@package'>@package</option>
+            }
+        </select>
+        <div>@_viewModel.SelectedPackage</div>
+    </div>
+}
+
+@if (!string.IsNullOrEmpty(_viewModel.SelectedPackage))
+{
+    <div id="analysis-direction-picker">
+        <label for='direction-picker'>Pick analysis direction</label>
+        <select id='direction-picker' name='direction-picker' @bind='_viewModel.AnalysisDirection'>
+            <option value='Up'>Up</option>
+            <option value='Down'>Down</option>
+        </select>
+        <div>@_viewModel.AnalysisDirection</div>
+    </div>
+}
+
 <div id="svgHolder"></div>
 
 <button @onclick="_viewModel.LoadChart">Load Chart</button>

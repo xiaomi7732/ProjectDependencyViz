@@ -9,4 +9,6 @@ public record Assets
     public IDictionary<string, AssetLibraryInfo>? Libraries { get; init; }
 
     public IDictionary<string, IEnumerable<string>>? ProjectFileDependencyGroups { get; init; }
+
+    public AssetProject Project { get; init; } = default!;
 }

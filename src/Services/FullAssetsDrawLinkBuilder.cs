@@ -1,10 +1,14 @@
 using ArchAnalyzer.Models;
 using ArchAnalyzer.Services.Contracts;
+using ArchAnalyzer.ViewModels;
 
 namespace ArchAnalyzer.Services;
 
 public class FullAssetsDrawLinkBuilder : IDrawLinksBuilder
 {
+    private PackageItem? _interestingPackage;
+    private AnalysisDirection _analysisDirection = AnalysisDirection.Up;
+
     public FullAssetsDrawLinkBuilder(IAssetService assetService)
     {
         _assetService = assetService ?? throw new ArgumentNullException(nameof(assetService));
@@ -14,15 +18,29 @@ public class FullAssetsDrawLinkBuilder : IDrawLinksBuilder
     private HashSet<DrawLink> _links = new HashSet<DrawLink>();
     private readonly IAssetService _assetService;
 
+
     public FullAssetsDrawLinkBuilder WithAssets(Assets assets)
     {
         _assets = assets ?? throw new ArgumentNullException(nameof(assets));
         return this;
     }
 
-    public void Clear()
+    public FullAssetsDrawLinkBuilder WithPackageItem(PackageItem packageItem)
+    {
+        _interestingPackage = packageItem ?? throw new ArgumentNullException(nameof(packageItem));
+        return this;
+    }
+
+    public FullAssetsDrawLinkBuilder WithDirection(AnalysisDirection direction)
+    {
+        _analysisDirection = direction;
+        return this;
+    }
+
+    public FullAssetsDrawLinkBuilder Clear()
     {
         _links.Clear();
+        return this;
     }
 
     public IEnumerable<DrawLink> Build(string target)
@@ -42,8 +60,77 @@ public class FullAssetsDrawLinkBuilder : IDrawLinksBuilder
             throw new InvalidOperationException("Project dependency is not found.");
         }
 
+        if (_interestingPackage is null || _analysisDirection == AnalysisDirection.Full)
+        {
+            BuildFull(target);
+            return _links;
+        }
+
+        BuildPartial(target, _interestingPackage);
+        return _links;
+    }
+
+    private void BuildPartial(string target, PackageItem currentItem)
+    {
+        switch (_analysisDirection)
+        {
+            case AnalysisDirection.Up:
+                BuildUp(target, currentItem);
+                break;
+            case AnalysisDirection.Down:
+                BuildDown(target, currentItem);
+                break;
+            default:
+                throw new NotSupportedException($"Unsupported analysis direction of {_analysisDirection}");
+        }
+    }
+
+    private void BuildDown(string target, PackageItem currentItem)
+    {
+        IEnumerable<PackageItem> children = _assetService.GetChildren(_assets!, target, currentItem);
+        if (children.Any())
+        {
+            foreach (PackageItem child in children)
+            {
+                _links.Add(currentItem.DrawLinkTo(child, _assets!, _assetService));
+                BuildDown(target, child);
+            }
+        }
+        else
+        {
+            _links.Add(currentItem.DrawLinkTo(new PackageItem("End", "0.0.0"), _assets!, _assetService));
+        }
+    }
+
+    private void BuildUp(string target, PackageItem currentItem)
+    {
+        IEnumerable<PackageItem> parents = _assetService.GetParents(_assets!, target, currentItem);
+        if (parents.Any())
+        {
+            foreach (PackageItem parent in parents)
+            {
+                _links.Add(parent.DrawLinkTo(currentItem, _assets!, _assetService));
+                BuildUp(target, parent);
+            }
+        }
+        else
+        {
+            string? projectName = _assets?.Project?.Restore?.ProjectName;
+            string sourceNodeName = string.IsNullOrEmpty(projectName) ? target : $"{projectName}/{target}";
+            string libType = _assetService.GetLibraryType(_assets!, currentItem) ?? "Unknown";
+            _links.Add(new DrawLink()
+            {
+                Source = sourceNodeName,
+                Target = $"{currentItem.Name}/{currentItem.Version}",
+                Type = libType,
+            });
+        }
+    }
+
+    private void BuildFull(string target)
+    {
         IEnumerable<string>? headers = Enumerable.Empty<string>();
-        if (_assets.ProjectFileDependencyGroups.Keys.Contains(target, StringComparer.OrdinalIgnoreCase))
+        if (_assets!.ProjectFileDependencyGroups!.Keys.Contains(target, StringComparer.OrdinalIgnoreCase))
         {
             headers = _assets.ProjectFileDependencyGroups[target];
         }
@@ -57,8 +144,6 @@ public class FullAssetsDrawLinkBuilder : IDrawLinksBuilder
 
             AppendDependencies(target, dependencyItem.Name, dependencyItem.Version);
         }
-
-        return _links;
     }
 
     private void AppendDependencies(string target, string sourceName, string sourceVersion)

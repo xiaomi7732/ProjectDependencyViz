@@ -1,6 +1,6 @@
 import Chart from "./chart.js";
 
-export function draw(linkParam) {
+export function draw(linkParam, knownTypes) {
     let links = null;
     if (!linkParam) {
         console.log('No link parameter');
@@ -20,7 +20,7 @@ export function draw(linkParam) {
     }
 
 
-    const types = ["package", "project"];
+    const types = !!knownTypes ? knownTypes : ["package", "project"];
     const data = {
         nodes: Array.from(new Set(links.flatMap(l => [l.source, l.target])), id => ({ id })),
         links,

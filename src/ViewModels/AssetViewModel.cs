@@ -13,6 +13,7 @@ public class AssetViewModel : ViewModelBase<ArchAnalyzer.Pages.Assets>
     private readonly IAssetService _assetService;
     private readonly FullAssetsDrawLinkBuilder _fullAssetsDrawLinkBuilder;
     private Assets? _assets;
+    private PackageItem? interestingPackage;
 
     public AssetViewModel(
         IJSRuntime jsRuntime,
@@ -41,7 +42,36 @@ public class AssetViewModel : ViewModelBase<ArchAnalyzer.Pages.Assets>
 
     public IEnumerable<string> ValidTargets { get; set; } = Enumerable.Empty<string>();
 
-    public string? SelectedTarget { get; set; }
+    private string? _selectedTarget;
+    public string? SelectedTarget
+    {
+        get { return _selectedTarget; }
+        set
+        {
+            if (!string.Equals(_selectedTarget, value))
+            {
+                _selectedTarget = value;
+                RaisePropertyChangeAsync();
+            }
+        }
+    }
+
+    public IEnumerable<string> PackageList { get; set; } = Enumerable.Empty<string>();
+    private string? _selectedPackage;
+    public string? SelectedPackage
+    {
+        get { return _selectedPackage; }
+        set
+        {
+            if (!string.Equals(_selectedPackage, value, StringComparison.Ordinal))
+            {
+                _selectedPackage = value;
+                RaisePropertyChangeAsync();
+            }
+        }
+    }
+
+    public AnalysisDirection AnalysisDirection { get; set; }
 
     public void LoadSampleData()
     {
@@ -67,6 +97,18 @@ public class AssetViewModel : ViewModelBase<ArchAnalyzer.Pages.Assets>
 
             ValidTargets = await _assetService.GetTargetsAsync(_assets, default);
             SelectedTarget = ValidTargets.FirstOrDefault();
+        }
+
+        if (string.Equals(propertyName, nameof(SelectedTarget)))
+        {
+            _assets = _assets ?? await _textAssetsDeserializer.WithJsonString(AssetJsonText).DeserializeAsync(default);
+
+            if (_assets is null)
+            {
+                return;
+            }
+
+            PackageList = _assets.Targets?[SelectedTarget!]?.Keys?.OrderBy(k => k) ?? Enumerable.Empty<string>();
         }
     }
 
@@ -95,20 +137,14 @@ public class AssetViewModel : ViewModelBase<ArchAnalyzer.Pages.Assets>
             return;
         }
 
-        // IEnumerable<string>? headers = Enumerable.Empty<string>();
-        // if (_assets.ProjectFileDependencyGroups.Keys.Contains(SelectedTarget, StringComparer.OrdinalIgnoreCase))
-        // {
-        //     headers = _assets.ProjectFileDependencyGroups[SelectedTarget];
-        // }
+        FullAssetsDrawLinkBuilder builder = _fullAssetsDrawLinkBuilder.Clear().WithAssets(_assets);
+        if (!string.IsNullOrEmpty(SelectedPackage))
+        {
+            builder = builder.WithPackageItem(PackageItem.Parse(SelectedPackage)).WithDirection(AnalysisDirection);
+        };
 
-        // List<DrawLink> drawLinks = new List<DrawLink>();
-        // foreach (string header in headers)
-        // {
-        //     ProjectFileDependencyItem dependencyItem = new ProjectFileDependencyItem(header);
-        //     string libraryType = _assetService.GetLibraryType(_assets, dependencyItem.Name, dependencyItem.Version) ?? "unknown";
-        //     drawLinks.Add(new DrawLink { Source = SelectedTarget, Target = header, Type = libraryType });
-        // }
-        IEnumerable<DrawLink> graph = _fullAssetsDrawLinkBuilder.WithAssets(_assets).Build(SelectedTarget);
-        _js.InvokeVoidAsync("draw", graph);
+
+        IEnumerable<DrawLink> graph = builder.Build(SelectedTarget);
+        _js.InvokeVoidAsync("draw", graph, graph.Select(link => link.Type).Distinct());
     }
 }
