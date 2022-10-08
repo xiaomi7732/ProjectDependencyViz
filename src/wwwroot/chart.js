@@ -8,7 +8,7 @@ export default class Chart {
         //     marginBottom = 30, // the bottom margin, in pixels
         //     marginLeft = 40, // the left margin, in pixels
         width: 640, // the outer width of the chart, in pixels
-        height: 400, // the outer height of the chart, in pixels
+        height: 360,// the outer height of the chart, in pixels
         //     xDomain, // an array of (ordinal) x-values
         //     xRange = [marginLeft, width - marginRight], // [left, right]
         //     yType = d3.scaleLinear, // y-scale type
@@ -104,7 +104,7 @@ export default class Chart {
         node.append("circle")
             .attr("stroke", "white")
             .attr("stroke-width", 1.5)
-            .attr("r", 4);  // Dot size
+            .attr("r", 3);  // Dot size
 
         node.append("text")
             .attr("x", 8)
