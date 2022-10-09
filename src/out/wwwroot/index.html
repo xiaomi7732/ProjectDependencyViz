@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>.NET Project Dependency Analyzer</title>
+    <base href="/" />
+    <link href="css/app.css" rel="stylesheet" />
+    <link href="ArchAnalyzer.styles.css" rel="stylesheet" />
+</head>
+
+<script src="https://d3js.org/d3.v7.min.js"></script>
+<script src="/app.js" type="module"></script>
+
+<script type="module">
+    import { draw } from "./app.js";
+    window.draw = draw;
+</script>
+
+<body>
+    <div id="app">Loading...</div>
+
+    
+    <div id="blazor-error-ui">
+        An unhandled error has occurred.
+        <a href="" class="reload">Reload</a>
+        <a class="dismiss">🗙</a>
+    </div>
+    <script src="_framework/blazor.webassembly.js"></script>
+</body>
+
+</html>
