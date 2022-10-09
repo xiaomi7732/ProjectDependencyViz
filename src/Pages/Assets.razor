@@ -77,12 +77,30 @@
         </div>
         @if (_viewModel.IsReadyToAnalysis)
         {
-            <button class='btn btn-primary' @onclick="_viewModel.LoadChart">Load Chart</button>
+            <div class='project-summary-line'>
+                <button class='btn btn-primary' @onclick="_viewModel.LoadChart">Analyze</button>
+            </div>
         }
     }
     else
     {
-        <button class='btn' @onclick='_viewModel.Expand'>Refine Analysis</button>
+        <div class='project-summary-line'>
+            <span class='summary-title'>Project name:</span><span class='summary-content'>@_viewModel.ProjectName</span>
+            @if (!string.IsNullOrEmpty(_viewModel.SelectedTarget))
+            {
+                <span class='summary-title'>Target</span><span class='summary-content'>@_viewModel.SelectedTarget</span>
+            }
+
+            @if (!string.IsNullOrEmpty(_viewModel.SelectedPackage))
+            {
+                <span class='summary-title'>Package</span><span class='summary-content'>@_viewModel.SelectedPackage</span>
+            }
+            @if (_viewModel.SearchLevel > 0)
+            {
+                <span class='summary-title'>Search Depth</span><span class='summary-content'>@_viewModel.SearchLevel</span>
+            }
+            <button class='btn' @onclick='_viewModel.Expand'>Refine Analysis</button>
+        </div>
     }
     <div class='section' id='svg-holder-section'>
         <div id="svgHolder">Press Load Chart to see project dependencies.</div>
