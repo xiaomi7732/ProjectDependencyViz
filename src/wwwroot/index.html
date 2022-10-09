@@ -19,15 +19,23 @@
 </script>
 
 <body>
-    <div id="app">Loading...</div>
+    <div id="app">
+        <div class="app-loading-container">
+            <div class="app-loading-title">.NET Project Dependency Analyzer</div>
+            <div class="app-loading-content">
+                <div class="loader"></div>
+                <div>Get the content ready ...</div>
+            </div>
+        </div>
+    </div>
 
-    
+
     <div id="blazor-error-ui">
         An unhandled error has occurred.
         <a href="" class="reload">Reload</a>
         <a class="dismiss">🗙</a>
     </div>
-    <script src="_framework/blazor.webassembly.js"></script>
+    <script src="_framework/blazor.webassembly.js" autostart="true"></script>
 </body>
 
 </html>
