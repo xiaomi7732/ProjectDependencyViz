@@ -5,9 +5,17 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <title>.NET Project Dependency Analyzer</title>
+    <meta name="description" content="Analyze .NET project and NuGet package dependencies, visualize it in graph.">
+    <link rel="canonical" href="https://dep.codewithsaar.com/">
     <base href="/" />
     <link href="css/app.css" rel="stylesheet" />
     <link href="ArchAnalyzer.styles.css" rel="stylesheet" />
+
+    <meta property="og:title" content=".NET Project Dependency Analyzer">
+    <meta property="og:locale" content="en_US">
+    <meta property="og:url" content="https://dep.codewithsaar.com/">
+    <meta property="og:site_name" content=".NET Project Dependency Analyzer">
+    <meta property="og:type" content="website">
 </head>
 
 <script src="https://d3js.org/d3.v7.min.js"></script>
@@ -25,6 +33,15 @@
             <div class="app-loading-content">
                 <div class="loader"></div>
                 <div>Get the content ready ...</div>
+            </div>
+            <div class="app-loading-introduction">
+                <div>&nbsp;
+                </div>
+                <div style="width: 640px;">
+                    .NET Project Dependency Analyzer makes it easy for you the learn project dependencies. It will show dependency relations for project to project, project to package or package to package. When there is a NuGet package out of date, it is easy to find out which project is relying on it and update the reference accordingly.
+                </div>
+                <div>&nbsp;
+                </div>
             </div>
         </div>
     </div>

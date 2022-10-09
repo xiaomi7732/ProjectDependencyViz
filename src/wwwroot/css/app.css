@@ -103,7 +103,7 @@ a,
     font-size: 20px;
 }
 
-#app .app-loading-content{
+#app .app-loading-content {
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -121,6 +121,17 @@ a,
     height: 1rem;
     animation: spin 2s linear infinite;
     margin-right: 0.5rem;
+}
+
+#app .app-loading-introduction {
+    display: flex;
+    flex-direction: row;
+    margin-top: 120px;
+    color: var(--gray);
+}
+
+#app .app-loading-introduction > div {
+    flex-grow: 1;
 }
 
 @keyframes spin {
