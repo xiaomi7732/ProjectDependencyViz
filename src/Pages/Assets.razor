@@ -94,7 +94,9 @@
             @if (!string.IsNullOrEmpty(_viewModel.SelectedPackage))
             {
                 <span class='summary-title'>Package</span><span class='summary-content'>@_viewModel.SelectedPackage</span>
+                <span class='summary-title'>Direction</span><span class='summary-content'>@_viewModel.AnalysisDirection</span>
             }
+
             @if (_viewModel.SearchLevel > 0)
             {
                 <span class='summary-title'>Search Depth</span><span class='summary-content'>@_viewModel.SearchLevel</span>

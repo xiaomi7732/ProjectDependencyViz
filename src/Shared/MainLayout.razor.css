@@ -2,8 +2,8 @@
     display: flex;
     flex-direction: column;
     justify-items: stretch;
-    padding: 32px;
-    height: calc(100vh - 64px);
+    padding: 8px 16px;
+    height: calc(100vh - 32px);
 }
 
 #page-header {
