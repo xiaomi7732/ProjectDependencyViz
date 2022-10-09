@@ -1,7 +1,8 @@
 #asset-page{
+    flex-grow: 1;
     display: flex;
     flex-direction: column;
-    justify-items: stretch;
+    align-items: stretch;
 }
 
 #asset-picker{
@@ -11,6 +12,8 @@
 #svgHolder {
     border: 0px solid red;
     background-color: #f6f6f6;
+    align-self: stretch;
+    flex-grow: 1;
 }
 
 #input-container {
@@ -40,6 +43,16 @@ label {
 
 .section {
     margin-top: var(--gap-large);
+}
+
+#svg-holder-section
+{
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    overflow: scroll;
+    height: calc(100vh - 300px);
 }
 
 .project-summary-line
