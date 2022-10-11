@@ -7,7 +7,7 @@
   "linkerEnabled": true,
   "resources": {
     "assembly": {
-      "ArchAnalyzer.dll": "sha256-iKg061ZlDH8fwp+9BWXG00sA\/N61vvLwcpwgnbeZ4qo=",
+      "ArchAnalyzer.dll": "sha256-IDlwhlDZipaXZgw5hbFHOeCVQrHwxZTbkpHozVEdj0A=",
       "Microsoft.AspNetCore.Components.dll": "sha256-J4IGX+za1dxT7AKvDl0+TCsVGi3ezojjBNpgYx8drdc=",
       "Microsoft.AspNetCore.Components.Web.dll": "sha256-souneB8INYnqxSCyJTfRXNkjxesRqC8IruHzxjmuufI=",
       "Microsoft.AspNetCore.Components.WebAssembly.dll": "sha256-p78f2fm\/IYN6fJJzYiPpdEV6TZb86exIK5UBAs2FNgg=",
