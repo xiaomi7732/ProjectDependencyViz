@@ -100,7 +100,9 @@ public class FullAssetsDrawLinkBuilder : IDrawLinksBuilder
     private void BuildDown(string target, PackageItem currentItem, int currentLevel = 0)
     {
         IEnumerable<PackageItem> children = _assetService.GetChildren(_assets!, target, currentItem);
-        if ((_recursiveLevel is null || currentLevel < _recursiveLevel) && children.Any())
+        bool isMoreChildren = children.Any();
+
+        if ((_recursiveLevel is null || currentLevel < _recursiveLevel) && isMoreChildren)
         {
             foreach (PackageItem child in children)
             {
@@ -108,7 +110,9 @@ public class FullAssetsDrawLinkBuilder : IDrawLinksBuilder
                 BuildDown(target, child, currentLevel + 1);
             }
         }
-        else
+
+        // As long as there's no children, append an arrow to the end
+        if (!isMoreChildren)
         {
             _links.Add(currentItem.DrawLinkTo(new PackageItem("End", "0.0.0"), _assets!, _assetService));
         }
