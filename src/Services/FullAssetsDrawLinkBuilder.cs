@@ -160,7 +160,7 @@ public class FullAssetsDrawLinkBuilder : IDrawLinksBuilder
         foreach (string header in headers)
         {
             ProjectFileDependencyItem dependencyItem = new ProjectFileDependencyItem(header);
-            string libraryType = _assetService.GetLibraryType(_assets, dependencyItem.Name, dependencyItem.Version) ?? "unknown";
+            string libraryType = _assetService.GetLibraryType(_assets, dependencyItem.Name);
             _links.Add(new DrawLink { Source = target, Target = $"{dependencyItem.Name}/{dependencyItem.Version}", Type = libraryType });
 
             AppendDependencies(target, dependencyItem.Name, dependencyItem.Version);
@@ -192,7 +192,7 @@ public class FullAssetsDrawLinkBuilder : IDrawLinksBuilder
             foreach (KeyValuePair<string, string> dependency in assetPackageInfo.Dependencies)
             {
                 string destPackage = $"{dependency.Key}/{dependency.Value}";
-                string libraryType = _assetService.GetLibraryType(_assets!, dependency.Key, dependency.Value) ?? "unknown";
+                string libraryType = _assetService.GetLibraryType(_assets!, dependency.Key);
 
                 _links.Add(new DrawLink() { Source = key, Target = destPackage, Type = libraryType });
 

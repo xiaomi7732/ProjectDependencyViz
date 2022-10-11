@@ -5,8 +5,8 @@ namespace ArchAnalyzer.Services;
 public interface IAssetService
 {
     Task<IEnumerable<string>> GetTargetsAsync(Assets assets, CancellationToken cancellationToken);
-    string? GetLibraryType(Assets assets, string name, string version);
-    string? GetLibraryType(Assets assets, PackageItem packageItem);
+    string GetLibraryType(Assets assets, string name);
+    string GetLibraryType(Assets assets, PackageItem packageItem);
 
     /// <summary>
     /// Gets all parents of a given package
@@ -58,23 +58,25 @@ internal class AssetService : IAssetService
         return Enumerable.Empty<PackageItem>();
     }
 
-    public string? GetLibraryType(Assets assets, string name, string version)
+    public string GetLibraryType(Assets assets, string name)
     {
+        const string unknown = "Unknown";
         if (assets?.Libraries is null)
         {
             throw new ArgumentNullException(nameof(assets));
         }
 
-        string key = $"{name}/{version}";
-        if (assets.Libraries.ContainsKey(key))
+        string key = $"{name}/";
+        KeyValuePair<string, AssetLibraryInfo>? hit = assets.Libraries.FirstOrDefault(item => item.Key.StartsWith(key, StringComparison.OrdinalIgnoreCase));
+        if (hit is null)
         {
-            return assets.Libraries[key].Type;
+            return unknown;
         }
-        return null;
+        return hit.Value.Value?.Type ?? unknown;
     }
 
-    public string? GetLibraryType(Assets assets, PackageItem packageItem)
-        => GetLibraryType(assets, packageItem.Name, packageItem.Version);
+    public string GetLibraryType(Assets assets, PackageItem packageItem)
+        => GetLibraryType(assets, packageItem.Name);
 
     public IEnumerable<PackageItem> GetParents(Assets assets, string target, PackageItem current)
     {

@@ -26,7 +26,7 @@ internal static class PackageItemExtensions
             throw new ArgumentNullException(nameof(assetService));
         }
 
-        string libType = assetService.GetLibraryType(assets, toPackage.Name, toPackage.Version) ?? "Unknown";
+        string libType = assetService.GetLibraryType(assets, toPackage.Name) ?? "Unknown";
 
         return new DrawLink()
         {
