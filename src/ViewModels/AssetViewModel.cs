@@ -14,7 +14,6 @@ public class AssetViewModel : ViewModelBase<ArchAnalyzer.Pages.Assets>
     private readonly IAssetService _assetService;
     private readonly FullAssetsDrawLinkBuilder _fullAssetsDrawLinkBuilder;
     private Assets? _assets;
-    private PackageItem? interestingPackage;
 
     public string? ProjectName { get; set; }
 
