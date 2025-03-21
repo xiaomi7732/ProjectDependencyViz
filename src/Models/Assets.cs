@@ -11,4 +11,6 @@ public record Assets
     public IDictionary<string, IEnumerable<string>>? ProjectFileDependencyGroups { get; init; }
 
     public AssetProject Project { get; init; } = default!;
+
+    public IDictionary<string, IDictionary<string, CentralTransitiveDependencyGroupInfo>>? CentralTransitiveDependencyGroups { get; init; }
 }
