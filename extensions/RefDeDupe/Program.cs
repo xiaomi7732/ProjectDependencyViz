@@ -82,7 +82,7 @@ Console.WriteLine("====");
 IDictionary<string, AssetPackageInfo> dependencyInfo =
     assets.Targets[targetFramework].Where(item => item.Value.Type == "package").ToDictionary(item => item.Key, item => item.Value);
 
-HashSet<string> needed = new(candidates, StringComparer.OrdinalIgnoreCase);
+HashSet<string> required = new(candidates, StringComparer.OrdinalIgnoreCase);
 foreach (string candidate in candidates)
 {
     // Console.WriteLine("Working on candidate: " + candidate);
@@ -99,26 +99,27 @@ foreach (string candidate in candidates)
         if (package.Value.Dependencies is not null && package.Value.Dependencies.ContainsKey(candidateName) && package.Value.Dependencies[candidateName] == candidateVersion)
         {
             Console.WriteLine($"{candidate} is a transitive dependency of {package.Key}");
-            needed.Remove(candidate);
+            required.Remove(candidate);
             continue;
         }
     }
 }
 
 Console.WriteLine("Required dependencies:");
-foreach (string need in needed.Order(StringComparer.OrdinalIgnoreCase))
+foreach (string requiredItem in required.Order(StringComparer.OrdinalIgnoreCase))
 {
-    Console.WriteLine(need);
+    Console.WriteLine(requiredItem);
 }
 
 // Specific formatter
 Console.WriteLine("Nuspec format:");
-foreach (string need in needed.Order(StringComparer.OrdinalIgnoreCase))
+foreach (string item in required.Order(StringComparer.OrdinalIgnoreCase))
 {
-    (string name, _) = GetNameVersion(need);
+    (string name, _) = GetNameVersion(item);
     string versionTokenName = "$" + name.Replace(".", string.Empty) + "Version" + "$";
     Console.WriteLine($@"<dependency id=""{name}"" version=""{versionTokenName}"" exclude=""Build,Analyzers"" />");
 }
+Console.WriteLine("{0} packages required.", required.Count);
 
 (string name, string version) GetNameVersion(string candidate)
 {
