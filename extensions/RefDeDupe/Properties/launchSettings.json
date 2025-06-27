@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "RefDeDupe": {
+      "commandName": "Project",
+      "commandLineArgs": "C:\\AIR\\fork-otel-profiler\\src\\ServiceProfiler.EventPipe\\ServiceProfiler.EventPipe.Client\\obj\\project.assets.json .NETStandard,Version=v2.0"
+    }
+  }
+}

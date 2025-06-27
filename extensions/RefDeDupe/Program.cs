@@ -1,4 +1,4 @@
-﻿
+
 // See https://aka.ms/new-console-template for more information
 using System.Runtime.CompilerServices;
 using System.Text.Json;
@@ -48,7 +48,7 @@ Console.ReadKey(true);
 
 if (assets.CentralTransitiveDependencyGroups is null || assets.CentralTransitiveDependencyGroups.Count == 0)
 {
-    Console.WriteLine($"The file {assetsFilePath} does not contain any transitive dependencies.");
+    Console.Error.WriteLine($"The file {assetsFilePath} does not contain any transitive dependencies.");
     return;
 }
 
